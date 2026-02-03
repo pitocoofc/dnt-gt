@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = {
-    name: "Economia DNT",
+    name: "jt DNT",
     init: (bot) => {
         const dbPath = path.join(process.cwd(), 'economy.json');
 
