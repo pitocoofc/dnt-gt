@@ -94,6 +94,36 @@ module.exports = {
             }
         });
         
+        // --- COMANDO: /transf ---
+        bot.command({
+            name: 'transf',
+            description: 'Transfere dinheiro para outro usuário',
+            options: [
+                { name: 'user', description: 'Para quem você quer enviar?', type: 6, required: true },
+                { name: 'valor', description: 'Quantia a ser transferida', type: 4, required: true }
+            ],
+            run: async (ctx) => {
+                const db = getDb();
+                const senderId = ctx.interaction.user.id;
+                const target = ctx.interaction.options.getUser('user');
+                const amount = ctx.interaction.options.getInteger('valor');
+
+                // Validações de segurança
+                if (amount <= 0) return ctx.reply("❌ O valor deve ser maior que zero.");
+                if (target.id === senderId) return ctx.reply("❌ Você não pode transferir para si mesmo.");
+                if ((db[senderId] || 0) < amount) return ctx.reply("❌ Você não tem saldo suficiente.");
+
+                // Executa a transação
+                db[senderId] -= amount;
+                db[target.id] = (db[target.id] || 0) + amount;
+                
+                saveDb(db);
+
+                await ctx.reply(`💸 **${ctx.interaction.user.username}** enviou **R$ ${amount}** para **${target.username}**!`);
+            }
+        });
+        
+
         
         // --- COMANDO: /removemoney ---
         bot.command({
